@@ -5,7 +5,7 @@ import reverse_geocoder
 
 def find_films_year(path, year):
     """
-    str -> set
+    (str, str) -> set
     Function takes path to file anf returns set of films locations.
     """
     answer = []
@@ -32,6 +32,24 @@ def find_near_locations(latt, long, places):
         user_location[4][1] in loc_txt and user_location[4][1] != '':
             final_locations.append(loc_txt)
     return final_locations
+
+
+def locations_to_coords(locations):
+    """
+    list -> list
+    Function takes list of locations and returns list of coordinates.
+    >>> locations_to_coords(['Lviv'])
+    [(49.841952, 24.0315921)]
+    """
+    coords_final = []
+    geolocator = Nominatim(user_agent="specify_your_app_name_here")
+    coords_range = 9 if len(locations) >= 10 else len(locations)
+
+    for point in range(coords_range):
+        coordinates = geolocator.geocode(locations[point])
+        if coordinates is not None:
+            coords_final.append((coordinates.latitude, coordinates.longitude))
+    return coords_final
 
 
 def map_generator(latt, long, coords, year):
@@ -63,24 +81,6 @@ def map_generator(latt, long, coords, year):
     m.add_child(layer_3)
     m.add_child(folium.LayerControl())
     m.save('map_%s.html' % year)
-
-
-def locations_to_coords(locations):
-    """
-    list -> list
-    Function takes list of locations and returns list of coordinates.
-    >>> locations_to_coords(['Lviv'])
-    [(49.841952, 24.0315921)]
-    """
-    coords_final = []
-    geolocator = Nominatim(user_agent="specify_your_app_name_here")
-    coords_range = 9 if len(locations) >= 10 else len(locations)
-
-    for point in range(coords_range):
-        coordinates = geolocator.geocode(locations[point])
-        if coordinates is not None:
-            coords_final.append((coordinates.latitude, coordinates.longitude))
-    return coords_final
 
 
 def main():
